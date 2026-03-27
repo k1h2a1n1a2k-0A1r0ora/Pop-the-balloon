@@ -7,7 +7,7 @@
 <style>
 body { margin:0; overflow:hidden; font-family:Arial; }
 
-/* SKY BACKGROUND */
+/* SKY */
 #bg {
   position:fixed;
   width:100%;
@@ -36,7 +36,6 @@ body { margin:0; overflow:hidden; font-family:Arial; }
   opacity:0.9;
   animation: moveCloud linear infinite;
 }
-
 @keyframes moveCloud {
   from { transform:translateX(-200px); }
   to { transform:translateX(120vw); }
@@ -48,7 +47,6 @@ body { margin:0; overflow:hidden; font-family:Arial; }
   font-size:20px;
   animation: fly 12s linear infinite;
 }
-
 @keyframes fly {
   from { transform:translateX(-50px); }
   to { transform:translateX(120vw); }
@@ -76,7 +74,7 @@ button {
   color:white;
 }
 
-/* SCORE + TIMER */
+/* TOP BAR */
 #topBar {
   position:absolute;
   top:10px;
@@ -98,7 +96,6 @@ button {
     inset 5px 5px 10px rgba(255,255,255,0.4),
     0 8px 15px rgba(0,0,0,0.4);
 }
-
 .balloon::before {
   content:'';
   position:absolute;
@@ -109,7 +106,6 @@ button {
   top:10px;
   left:12px;
 }
-
 .balloon::after {
   content:'';
   position:absolute;
@@ -118,6 +114,16 @@ button {
   background:#444;
   bottom:-40px;
   left:50%;
+}
+
+/* PRAISE */
+#praise {
+  position:absolute;
+  font-size:30px;
+  color:white;
+  display:none;
+  font-weight:bold;
+  text-shadow:2px 2px 5px black;
 }
 
 /* END SCREEN */
@@ -153,6 +159,8 @@ button {
   Target: 15
 </div>
 
+<div id="praise"></div>
+
 <div id="endScreen">
   <div id="resultText"></div>
   <button onclick="location.reload()">Play Again</button>
@@ -164,7 +172,7 @@ let time = 30;
 let target = 15;
 let playing = false;
 
-/* CREATE CLOUDS */
+/* CLOUDS */
 for(let i=0;i<6;i++){
   let c=document.createElement('div');
   c.className='cloud';
@@ -175,7 +183,7 @@ for(let i=0;i<6;i++){
   document.getElementById('bg').appendChild(c);
 }
 
-/* CREATE BIRDS */
+/* BIRDS */
 for(let i=0;i<3;i++){
   let b=document.createElement('div');
   b.className='bird';
@@ -183,6 +191,18 @@ for(let i=0;i<3;i++){
   b.style.top=(50+Math.random()*200)+'px';
   b.style.animationDuration=(10+Math.random()*5)+'s';
   document.getElementById('bg').appendChild(b);
+}
+
+/* PRAISE */
+const praises = ["Great!", "Awesome!", "Wow!", "Nice!", "Super!"];
+
+function showPraise(x, y){
+  let p = document.getElementById('praise');
+  p.innerText = praises[Math.floor(Math.random()*praises.length)];
+  p.style.left = x + "px";
+  p.style.top = y + "px";
+  p.style.display = "block";
+  setTimeout(()=>p.style.display="none",500);
 }
 
 function startGame(){
@@ -249,11 +269,13 @@ function createBalloon(){
     }
   },20);
 
-  b.onclick = function(){
+  b.onclick = function(event){
     if(!playing) return;
 
     score++;
     document.getElementById("score").innerText = score;
+
+    showPraise(event.clientX, event.clientY);
 
     b.remove();
     clearInterval(rise);
